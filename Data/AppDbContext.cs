@@ -11,6 +11,7 @@ namespace BankStatement.Demo.Data
 
         public DbSet<BankStatementEntity> BankStatements { get; set; }
         public DbSet<TransactionEntity> Transactions { get; set; }
+        public DbSet<PdfLinkToken> PdfLinkTokens { get; set; }
 
         public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)
         {
@@ -51,6 +52,13 @@ namespace BankStatement.Demo.Data
                 {
                     builder.ToJson();
                 });
+            });
+
+            modelBuilder.Entity<PdfLinkToken>(entity =>
+            {
+                entity.ToTable("pdf_link_tokens");
+                entity.HasKey(e => e.Id);
+                entity.HasIndex(e => e.Signature).IsUnique();
             });
         }
     }

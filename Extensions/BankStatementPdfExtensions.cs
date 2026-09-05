@@ -1,15 +1,16 @@
-﻿using BankStatement.Demo.Models.BankStatement.WIP;
+﻿using BankStatement.Demo.DTOs;
+using BankStatement.Demo.Extensions;
 using QuestPDF.Fluent;
 using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
 
-namespace BankStatement.Demo.Models.BankStatement
+namespace BankStatement.Demo.Extensions
 {
 
     public static class BankStatementPdfExtensions
     {
 
-        public static byte[] GeneratePdf(this BankStatement2 statement)
+        public static byte[] GeneratePdf(this BankStatementDto statement)
         {
             return Document.Create(container =>
             {
@@ -32,27 +33,27 @@ namespace BankStatement.Demo.Models.BankStatement
             }).GeneratePdf();
         }
 
-        private static void ComposeHeader(IContainer container, BankStatement2 statement)
+        private static void ComposeHeader(IContainer container, BankStatementDto statement)
         {
             container.Row(row =>
             {
                 row.RelativeItem().Column(col =>
                 {
-                    col.Item().Text(statement.BankMetadata.InstitutionName)
+                    col.Item().Text(statement.InstitutionName)
                        .FontSize(20).Bold().FontColor(Colors.Blue.Darken3);
-                    col.Item().Text($"Routing: {statement.BankMetadata.RoutingNumber}");
+                    col.Item().Text($"Routing: {statement.RoutingNumber}");
                 });
 
                 row.ConstantItem(200).AlignRight().Column(col =>
                 {
                     col.Item().Text("ACCOUNT STATEMENT").FontSize(14).Bold();
-                    col.Item().Text($"Statement ID: {statement.BankMetadata.StatementId}");
-                    col.Item().Text($"Period: {statement.StatementPeriod.StartDate:yyyy-MM-dd} to {statement.StatementPeriod.EndDate:yyyy-MM-dd}");
+                    col.Item().Text($"Statement ID: {statement.StatementId}");
+                    col.Item().Text($"Period: {statement.StartDate:yyyy-MM-dd} to {statement.EndDate:yyyy-MM-dd}");
                 });
             });
         }
 
-        private static void ComposeContent(IContainer container, BankStatement2 statement)
+        private static void ComposeContent(IContainer container, BankStatementDto statement)
         {
             container.PaddingVertical(10).Column(col =>
             {
@@ -61,14 +62,14 @@ namespace BankStatement.Demo.Models.BankStatement
                 {
                     row.RelativeItem().Column(c =>
                     {
-                        c.Item().Text($"Account Holder: {statement.AccountDetails.AccountHolder}").Bold();
-                        c.Item().Text($"Account: {statement.AccountDetails.AccountNumberMasked} ({statement.AccountDetails.AccountType})");
+                        c.Item().Text($"Account Holder: {statement.AccountHolder}").Bold();
+                        c.Item().Text($"Account: {statement.AccountNumberMasked} ({statement.AccountType})");
                     });
 
                     row.RelativeItem().Column(c =>
                     {
-                        c.Item().Text($"Starting Balance: {statement.BalanceSummary.StartingBalance:C}");
-                        c.Item().Text($"Ending Balance: {statement.BalanceSummary.EndingBalance:C}").Bold();
+                        c.Item().Text($"Starting Balance: {statement.StartingBalance:C}");
+                        c.Item().Text($"Ending Balance: {statement.EndingBalance:C}").Bold();
                     });
                 });
 
@@ -84,7 +85,6 @@ namespace BankStatement.Demo.Models.BankStatement
                         columns.ConstantColumn(80);
                     });
 
-                    // Header
                     table.Header(header =>
                     {
                         header.Cell().BorderBottom(1).Text("Date").Bold();
@@ -93,7 +93,6 @@ namespace BankStatement.Demo.Models.BankStatement
                         header.Cell().BorderBottom(1).AlignRight().Text("Amount").Bold();
                     });
 
-                    // Content
                     foreach (var tx in statement.Transactions)
                     {
                         var amountColor = tx.Type == "CREDIT" ? Colors.Green.Darken2 : Colors.Grey.Darken3;

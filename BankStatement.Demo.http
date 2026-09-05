@@ -1,6 +1,3 @@
 @BankStatement.Demo_HostAddress = http://localhost:5200
 
-GET {{BankStatement.Demo_HostAddress}}/weatherforecast/
-Accept: application/json
-
 ###
