@@ -1,9 +1,9 @@
-using BankStatement.Demo.Data;
+using BankStatement.Demo.Extensions;
 using BankStatement.Demo.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.JsonWebTokens;
 using Microsoft.IdentityModel.Tokens;
+using QuestPDF.Infrastructure;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -14,9 +14,9 @@ var config = builder.Configuration;
 builder.Services.AddControllers();
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
+QuestPDF.Settings.License = LicenseType.Community;
 
-builder.Services.AddDbContext<AppDbContext>(options =>
-    options.UseInMemoryDatabase("JwtAuthDemoDb"));
+builder.Services.AddApplicationServices(builder.Configuration);
 
 //JWT Auth Config
 var jwtSettings = builder.Configuration.GetSection("JwtSettings");
