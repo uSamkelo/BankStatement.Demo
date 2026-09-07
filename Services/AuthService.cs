@@ -12,7 +12,7 @@ namespace BankStatement.Demo.Services
     {
         public async Task<User?> RegisterAsync(RegisterRequest request)
         {
-            if (context.Users.Any(u => u.Username == request.Username))
+            if (await context.Users.AnyAsync(u => u.Username == request.Username))
             {
                 return null; // User already exists
             }

@@ -3,6 +3,7 @@
     public class BankStatementEntity
     {
         public Guid Id { get; set; } = Guid.NewGuid();
+        public int UserId { get; set; }
         public string StatementId { get; set; }
         public string InstitutionName { get; set; }
         public string RoutingNumber { get; set; }

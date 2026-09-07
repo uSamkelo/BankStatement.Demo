@@ -12,6 +12,13 @@ namespace BankStatement.Demo.Data
             context.BankStatements.Add(bankStatement);
         }
 
+        public async Task<BankStatementEntity?> GetBankStatementByIdAsync(Guid id, int userId)
+        {
+            return await context.BankStatements
+                .Include(b => b.Transactions)
+                .FirstOrDefaultAsync(b => b.Id == id && b.UserId == userId);
+        }
+
         public async Task<BankStatementEntity?> GetBankStatementByIdAsync(Guid id)
         {
             return await context.BankStatements

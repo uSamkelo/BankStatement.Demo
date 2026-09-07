@@ -3,11 +3,13 @@ using BankStatement.Demo.DTOs;
 using BankStatement.Demo.Entities;
 using BankStatement.Demo.Extensions;
 using BankStatement.Demo.Interfaces;
+using BankStatement.Demo.Models;
 using BankStatement.Demo.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.WebUtilities;
+using System.Security.Claims;
 
 namespace BankStatement.Demo.Controllers
 {
@@ -16,10 +18,13 @@ namespace BankStatement.Demo.Controllers
     [ApiController]
     public class BankStatementController(IUnitOfWork unitOfWork, PdfLinkService pdfLinkService, IMapper mapper) : ControllerBase
     {
+        private int CurrentUserId =>
+            int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
+
         [HttpGet("{id:guid}/pdf")]
         public async Task<IActionResult> GetPdf(Guid id)
         {
-            var bank = await unitOfWork.BankRepository.GetBankStatementByIdAsync(id);
+            var bank = await unitOfWork.BankRepository.GetBankStatementByIdAsync(id, CurrentUserId);
             if (bank is null)
                 return NotFound();
 
@@ -32,6 +37,7 @@ namespace BankStatement.Demo.Controllers
         public async Task<ActionResult<BankStatementDto>> CreateBankStatement(BankStatementDto bankStatementDto)
         {
             var bank = mapper.Map<BankStatementEntity>(bankStatementDto);
+            bank.UserId = CurrentUserId;
 
             unitOfWork.BankRepository.AddBankStatement(bank);
             await unitOfWork.CompleteAsync();
@@ -43,7 +49,7 @@ namespace BankStatement.Demo.Controllers
         [HttpGet("{id:guid}/GetPdfLinkToken")]
         public async Task<IActionResult> GetPdfLinkToken(Guid id)
         {
-            var bank = await unitOfWork.BankRepository.GetBankStatementByIdAsync(id);
+            var bank = await unitOfWork.BankRepository.GetBankStatementByIdAsync(id, CurrentUserId);
             if (bank is null)
                 return NotFound();
 

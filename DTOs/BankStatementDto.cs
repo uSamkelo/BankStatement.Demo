@@ -1,10 +1,9 @@
-﻿using BankStatement.Demo.Entities;
-
-namespace BankStatement.Demo.DTOs
+﻿namespace BankStatement.Demo.DTOs
 {
     public class BankStatementDto
     {
-        public int Id { get; set; }
+        public Guid Id { get; set; }
+        public int UserId { get; set; }
         public string StatementId { get; set; }
         public string InstitutionName { get; set; }
         public string RoutingNumber { get; set; }
@@ -25,6 +24,6 @@ namespace BankStatement.Demo.DTOs
         // Store category breakdown dynamically as JSONB in Postgres
         public Dictionary<string, decimal> CategoryBreakdown { get; set; }
 
-        public List<TransactionEntity> Transactions { get; set; } = new();
+        public List<TransactionDto> Transactions { get; set; } = new();
     }
 }

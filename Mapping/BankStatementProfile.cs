@@ -9,7 +9,14 @@ namespace BankStatement.Demo.Mapping
         public BankStatementProfile()
         {
             CreateMap<BankStatementEntity, BankStatementDto>();
-            CreateMap<BankStatementDto, BankStatementEntity>();
+            CreateMap<BankStatementDto, BankStatementEntity>()
+                .ForMember(dest => dest.Id, opt => opt.Ignore());
+
+            CreateMap<TransactionEntity, TransactionDto>();
+            CreateMap<TransactionDto, TransactionEntity>();
+
+            CreateMap<MerchantEmbed, MerchantDto>();
+            CreateMap<MerchantDto, MerchantEmbed>();
         }
     }
 }
